@@ -7,12 +7,12 @@
 <style>
   :root {
     --bg: #f6f7fb; --card: #ffffff; --text: #1d2433; --muted: #6b7385;
-    --accent: #4f46e5; --accent-soft: #eef0ff; --border: #e3e6ef;
+    --accent: #4f46e5; --accent-soft: #eef0ff; --border: #e3e6ef; --danger: #dc2626;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #11141c; --card: #1a1f2b; --text: #e8ebf3; --muted: #98a0b3;
-      --accent: #818cf8; --accent-soft: #232846; --border: #2a3142;
+      --accent: #818cf8; --accent-soft: #232846; --border: #2a3142; --danger: #f87171;
     }
   }
   * { box-sizing: border-box; }
@@ -26,6 +26,8 @@
   header h1 { margin: 0; font-size: 1.6rem; }
   header p { margin: 4px 0 0; color: var(--muted); }
   main { max-width: 860px; margin: 0 auto; padding: 16px 20px 60px; }
+  .section-title { margin: 28px 0 12px; font-size: 1rem; color: var(--muted); font-weight: 600; }
+  .section-title:first-child { margin-top: 0; }
   .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
   .tool-card {
     display: block; background: var(--card); border: 1px solid var(--border);
@@ -40,10 +42,11 @@
   .tool-card h2 { margin: 0 0 4px; font-size: 1.1rem; }
   .tool-card p { margin: 0; color: var(--muted); font-size: .92rem; }
   .panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
-  .back { display: inline-block; margin-bottom: 14px; color: var(--accent); text-decoration: none; font-weight: 600; }
   .panel h2 { margin-top: 0; }
+  .back { display: inline-block; margin-bottom: 14px; color: var(--accent); text-decoration: none; font-weight: 600; }
+  .hint { color: var(--muted); font-size: .9rem; }
   label { display: block; font-weight: 600; margin: 14px 0 6px; font-size: .92rem; }
-  textarea, input[type=number], input[type=text], select {
+  textarea, input[type=number], input[type=text], input[type=file], select {
     width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
     background: var(--bg); color: var(--text); font: inherit;
   }
@@ -53,7 +56,11 @@
     padding: 10px 18px; font: inherit; font-weight: 600; cursor: pointer;
   }
   button:hover { opacity: .9; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
   button.secondary { background: var(--accent-soft); color: var(--accent); }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .status { margin-top: 14px; font-size: .92rem; color: var(--muted); min-height: 1.4em; }
+  .status.error { color: var(--danger); }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 16px; }
   .stat { background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; }
   .stat b { display: block; font-size: 1.5rem; }
@@ -66,9 +73,38 @@
   .pw-out { display: flex; gap: 8px; margin-top: 16px; }
   .pw-out input { font-family: ui-monospace, monospace; font-size: 1.05rem; }
   .pw-out button { flex: 0 0 auto; }
+  .drop {
+    border: 2px dashed var(--border); border-radius: 14px; padding: 28px; text-align: center;
+    color: var(--muted); cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .drop.over, .drop:hover { border-color: var(--accent); background: var(--accent-soft); }
+  #doc-preview {
+    background: #fff; color: #000; margin-top: 18px; padding: 28px; border-radius: 8px;
+    border: 1px solid var(--border); max-height: 480px; overflow: auto; line-height: 1.6;
+  }
+  #doc-preview img { max-width: 100%; height: auto; }
+  #doc-preview table { border-collapse: collapse; margin: 10px 0; }
+  #doc-preview td, #doc-preview th { border: 1px solid #999; padding: 4px 8px; }
+  .img-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+  .img-list li {
+    display: flex; align-items: center; gap: 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px;
+  }
+  .img-list img { width: 52px; height: 52px; object-fit: cover; border-radius: 8px; }
+  .img-list .name { flex: 1; word-break: break-all; font-size: .92rem; }
+  .img-list button { padding: 6px 10px; }
   footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 20px; }
   [data-view] { display: none; }
   [data-view].active { display: block; }
+
+  @media print {
+    body { background: #fff; }
+    header, footer, .back, .no-print, .hint { display: none !important; }
+    main { padding: 0; max-width: none; }
+    .panel { border: 0; padding: 0; background: #fff; }
+    .panel h2 { display: none; }
+    #doc-preview { max-height: none; overflow: visible; border: 0; padding: 0; margin: 0; }
+  }
 </style>
 </head>
 <body>
@@ -80,8 +116,9 @@
 
 <main>
 
-  <!-- หน้าแรก -->
+  <!-- ================= หน้าแรก ================= -->
   <section data-view="home">
+    <div class="section-title">เครื่องมือทั่วไป</div>
     <div class="grid">
       <a class="tool-card" href="#/word-counter">
         <div class="icon">📝</div>
@@ -98,12 +135,16 @@
         <h2>สร้างรหัสผ่าน</h2>
         <p>สุ่มรหัสผ่านที่ปลอดภัย กำหนดความยาวได้</p>
       </a>
-      <a class="tool-card" href="file-tools.html#/word">
+    </div>
+
+    <div class="section-title">แปลงไฟล์</div>
+    <div class="grid">
+      <a class="tool-card" href="#/word-pdf">
         <div class="icon">📄</div>
         <h2>Word → PDF</h2>
         <p>แปลงไฟล์ .docx เป็น PDF ในเบราว์เซอร์</p>
       </a>
-      <a class="tool-card" href="file-tools.html#/image">
+      <a class="tool-card" href="#/image-pdf">
         <div class="icon">🖼️</div>
         <h2>รูปภาพ → PDF</h2>
         <p>รวมรูปหลายรูปเป็น PDF ไฟล์เดียว</p>
@@ -111,7 +152,7 @@
     </div>
   </section>
 
-  <!-- เครื่องมือ 1: นับคำ -->
+  <!-- ================= นับคำ ================= -->
   <section data-view="word-counter">
     <a class="back" href="#/">← กลับหน้าแรก</a>
     <div class="panel">
@@ -127,7 +168,7 @@
     </div>
   </section>
 
-  <!-- เครื่องมือ 2: แปลงหน่วย -->
+  <!-- ================= แปลงหน่วย ================= -->
   <section data-view="converter">
     <a class="back" href="#/">← กลับหน้าแรก</a>
     <div class="panel">
@@ -154,7 +195,7 @@
     </div>
   </section>
 
-  <!-- เครื่องมือ 3: สร้างรหัสผ่าน -->
+  <!-- ================= สร้างรหัสผ่าน ================= -->
   <section data-view="password">
     <a class="back" href="#/">← กลับหน้าแรก</a>
     <div class="panel">
@@ -173,17 +214,64 @@
     </div>
   </section>
 
+  <!-- ================= Word -> PDF ================= -->
+  <section data-view="word-pdf">
+    <a class="back" href="#/">← กลับหน้าแรก</a>
+    <div class="panel">
+      <h2>📄 Word → PDF</h2>
+      <p class="hint">รองรับไฟล์ .docx (ไม่รองรับ .doc รุ่นเก่า) การจัดหน้าอาจต่างจากต้นฉบับเล็กน้อย
+        ไฟล์ไม่ถูกอัปโหลดไปที่ไหน แปลงในเบราว์เซอร์ของคุณทั้งหมด</p>
+      <label for="docx-file">เลือกไฟล์ Word (.docx)</label>
+      <input type="file" id="docx-file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+      <div class="status" id="word-status"></div>
+      <div id="doc-preview" hidden></div>
+      <div class="actions no-print">
+        <button id="btn-word-pdf" type="button" disabled>⬇️ ดาวน์โหลด PDF</button>
+        <button id="btn-word-print" type="button" class="secondary" disabled>🖨️ พิมพ์ / บันทึกเป็น PDF</button>
+      </div>
+      <p class="hint">ถ้าต้องการให้ PDF เลือกคัดลอกข้อความได้และคมชัดที่สุด ให้ใช้ปุ่ม "พิมพ์ / บันทึกเป็น PDF"
+        แล้วเลือก Save as PDF ส่วนปุ่มดาวน์โหลดจะได้ PDF ที่เป็นภาพ</p>
+    </div>
+  </section>
+
+  <!-- ================= Image -> PDF ================= -->
+  <section data-view="image-pdf">
+    <a class="back" href="#/">← กลับหน้าแรก</a>
+    <div class="panel">
+      <h2>🖼️ รูปภาพ → PDF</h2>
+      <p class="hint">รวมรูปหลายรูปเป็น PDF ไฟล์เดียว 1 รูปต่อ 1 หน้า (JPG, PNG, WebP ฯลฯ)</p>
+      <div class="drop" id="img-drop">คลิกเพื่อเลือกรูป หรือลากรูปมาวางที่นี่</div>
+      <input type="file" id="img-files" accept="image/*" multiple hidden>
+      <ul class="img-list" id="img-list"></ul>
+      <label for="img-mode">ขนาดหน้า</label>
+      <select id="img-mode">
+        <option value="a4">A4 (เว้นขอบ)</option>
+        <option value="fit">เท่าขนาดรูป</option>
+      </select>
+      <div class="status" id="img-status"></div>
+      <div class="actions">
+        <button id="btn-img-pdf" type="button" disabled>⬇️ สร้างและดาวน์โหลด PDF</button>
+        <button id="btn-img-clear" type="button" class="secondary">ล้างทั้งหมด</button>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer>สร้างด้วย HTML + JavaScript • โฮสต์บน GitHub Pages</footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /* ---------- Router (hash-based) ---------- */
 const routes = {
   "": "home", "/": "home",
   "/word-counter": "word-counter",
   "/converter": "converter",
-  "/password": "password"
+  "/password": "password",
+  "/word-pdf": "word-pdf",
+  "/image-pdf": "image-pdf"
 };
 function route() {
   const path = location.hash.replace(/^#/, "");
@@ -194,6 +282,12 @@ function route() {
 }
 window.addEventListener("hashchange", route);
 route();
+
+function setStatus(id, msg, isError) {
+  const el = document.getElementById(id);
+  el.textContent = msg || "";
+  el.classList.toggle("error", !!isError);
+}
 
 /* ---------- Tool 1: Word counter ---------- */
 const wcText = document.getElementById("wc-text");
@@ -301,6 +395,187 @@ document.getElementById("pw-copy").addEventListener("click", async (e) => {
   } catch { pwOut.select(); }
 });
 genPassword();
+
+/* ---------- Tool 4: Word -> PDF ---------- */
+const docxInput = document.getElementById("docx-file");
+const preview = document.getElementById("doc-preview");
+const btnWordPdf = document.getElementById("btn-word-pdf");
+const btnWordPrint = document.getElementById("btn-word-print");
+let docName = "document";
+
+docxInput.addEventListener("change", async () => {
+  const file = docxInput.files[0];
+  btnWordPdf.disabled = btnWordPrint.disabled = true;
+  preview.hidden = true;
+  if (!file) return;
+  if (!/\.docx$/i.test(file.name)) {
+    setStatus("word-status", "รองรับเฉพาะไฟล์ .docx เท่านั้น", true);
+    return;
+  }
+  if (typeof mammoth === "undefined") {
+    setStatus("word-status", "โหลดไลบรารีไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้า", true);
+    return;
+  }
+  setStatus("word-status", "กำลังอ่านไฟล์...");
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.convertToHtml({ arrayBuffer });
+    preview.innerHTML = result.value || "<p>(เอกสารว่างเปล่า)</p>";
+    preview.hidden = false;
+    docName = file.name.replace(/\.docx$/i, "");
+    btnWordPdf.disabled = btnWordPrint.disabled = false;
+    setStatus("word-status", "พร้อมแปลงแล้ว ตรวจดูตัวอย่างด้านล่างได้");
+  } catch (err) {
+    console.error(err);
+    setStatus("word-status", "อ่านไฟล์ไม่สำเร็จ ไฟล์อาจเสียหายหรือมีรหัสผ่าน", true);
+  }
+});
+
+btnWordPdf.addEventListener("click", async () => {
+  if (typeof html2pdf === "undefined") {
+    setStatus("word-status", "โหลดไลบรารีไม่สำเร็จ กรุณารีเฟรชหน้า", true);
+    return;
+  }
+  setStatus("word-status", "กำลังสร้าง PDF... (ไฟล์ใหญ่อาจใช้เวลาสักครู่)");
+  btnWordPdf.disabled = true;
+  try {
+    await html2pdf().set({
+      margin: [12, 12, 12, 12],
+      filename: docName + ".pdf",
+      image: { type: "jpeg", quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["css", "legacy"] }
+    }).from(preview).save();
+    setStatus("word-status", "ดาวน์โหลดเรียบร้อย ✓");
+  } catch (err) {
+    console.error(err);
+    setStatus("word-status", "สร้าง PDF ไม่สำเร็จ ลองใช้ปุ่ม \"พิมพ์ / บันทึกเป็น PDF\" แทน", true);
+  } finally {
+    btnWordPdf.disabled = false;
+  }
+});
+
+btnWordPrint.addEventListener("click", () => {
+  const oldTitle = document.title;
+  document.title = docName;           // ใช้เป็นชื่อไฟล์เริ่มต้นตอน Save as PDF
+  window.print();
+  document.title = oldTitle;
+});
+
+/* ---------- Tool 5: Image -> PDF ---------- */
+const imgInput = document.getElementById("img-files");
+const imgDrop = document.getElementById("img-drop");
+const imgList = document.getElementById("img-list");
+const btnImgPdf = document.getElementById("btn-img-pdf");
+let images = []; // {name, dataUrl, w, h}
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 2480; // จำกัดด้านยาวสุด เพื่อไม่ให้ไฟล์ใหญ่เกินไป
+      const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.round(img.naturalWidth * scale), h = Math.round(img.naturalHeight * scale);
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve({ name: file.name, dataUrl: c.toDataURL("image/jpeg", 0.92), w, h });
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error(file.name)); };
+    img.src = url;
+  });
+}
+
+async function addFiles(fileList) {
+  const files = [...fileList].filter(f => f.type.startsWith("image/"));
+  if (!files.length) { setStatus("img-status", "ไม่พบไฟล์รูปภาพ", true); return; }
+  setStatus("img-status", "กำลังโหลดรูป...");
+  let failed = 0;
+  for (const f of files) {
+    try { images.push(await loadImage(f)); } catch { failed++; }
+  }
+  renderList();
+  setStatus("img-status", failed ? `เปิดรูปไม่ได้ ${failed} ไฟล์` : "", failed > 0);
+}
+
+function renderList() {
+  imgList.innerHTML = "";
+  images.forEach((im, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<img alt=""><span class="name"></span>
+      <button type="button" class="secondary" data-act="up" title="เลื่อนขึ้น">↑</button>
+      <button type="button" class="secondary" data-act="down" title="เลื่อนลง">↓</button>
+      <button type="button" class="secondary" data-act="del" title="ลบ">✕</button>`;
+    li.querySelector("img").src = im.dataUrl;
+    li.querySelector(".name").textContent = `${i + 1}. ${im.name}`;
+    li.addEventListener("click", e => {
+      const act = e.target.dataset.act;
+      if (!act) return;
+      if (act === "del") images.splice(i, 1);
+      if (act === "up" && i > 0) [images[i - 1], images[i]] = [images[i], images[i - 1]];
+      if (act === "down" && i < images.length - 1) [images[i + 1], images[i]] = [images[i], images[i + 1]];
+      renderList();
+    });
+    imgList.appendChild(li);
+  });
+  btnImgPdf.disabled = images.length === 0;
+}
+
+imgDrop.addEventListener("click", () => imgInput.click());
+imgInput.addEventListener("change", () => { addFiles(imgInput.files); imgInput.value = ""; });
+["dragenter", "dragover"].forEach(ev => imgDrop.addEventListener(ev, e => {
+  e.preventDefault(); imgDrop.classList.add("over");
+}));
+["dragleave", "drop"].forEach(ev => imgDrop.addEventListener(ev, e => {
+  e.preventDefault(); imgDrop.classList.remove("over");
+}));
+imgDrop.addEventListener("drop", e => addFiles(e.dataTransfer.files));
+
+document.getElementById("btn-img-clear").addEventListener("click", () => {
+  images = []; renderList(); setStatus("img-status", "");
+});
+
+btnImgPdf.addEventListener("click", () => {
+  if (!window.jspdf) {
+    setStatus("img-status", "โหลดไลบรารีไม่สำเร็จ กรุณารีเฟรชหน้า", true);
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+  const mode = document.getElementById("img-mode").value;
+  setStatus("img-status", "กำลังสร้าง PDF...");
+  try {
+    let pdf = null;
+    images.forEach((im) => {
+      if (mode === "fit") {
+        const pw = im.w * 0.264583, ph = im.h * 0.264583; // px -> mm ที่ 96 dpi
+        const o = pw > ph ? "l" : "p";
+        if (!pdf) pdf = new jsPDF({ unit: "mm", format: [pw, ph], orientation: o });
+        else pdf.addPage([pw, ph], o);
+        pdf.addImage(im.dataUrl, "JPEG", 0, 0, pw, ph);
+      } else {
+        const land = im.w > im.h;
+        const o = land ? "l" : "p";
+        const PW = land ? 297 : 210, PH = land ? 210 : 297;
+        if (!pdf) pdf = new jsPDF({ unit: "mm", format: "a4", orientation: o });
+        else pdf.addPage("a4", o);
+        const r = Math.min((PW - 20) / im.w, (PH - 20) / im.h);
+        const dw = im.w * r, dh = im.h * r;
+        pdf.addImage(im.dataUrl, "JPEG", (PW - dw) / 2, (PH - dh) / 2, dw, dh);
+      }
+    });
+    pdf.save("images.pdf");
+    setStatus("img-status", `สร้าง PDF ${images.length} หน้าเรียบร้อย ✓`);
+  } catch (err) {
+    console.error(err);
+    setStatus("img-status", "สร้าง PDF ไม่สำเร็จ", true);
+  }
+});
+renderList();
 </script>
 </body>
 </html>
