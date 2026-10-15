@@ -1,7 +1,296 @@
 <!DOCTYPE html>
-<html>
-  <head><title>My Site</title></head>
-  <body>
-    <h1>Hello, world!</h1>
-  </body>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Tools</title>
+<style>
+  :root {
+    --bg: #f6f7fb; --card: #ffffff; --text: #1d2433; --muted: #6b7385;
+    --accent: #4f46e5; --accent-soft: #eef0ff; --border: #e3e6ef;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #11141c; --card: #1a1f2b; --text: #e8ebf3; --muted: #98a0b3;
+      --accent: #818cf8; --accent-soft: #232846; --border: #2a3142;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif;
+    line-height: 1.6;
+  }
+  header { padding: 28px 20px 8px; max-width: 860px; margin: 0 auto; }
+  header a { color: inherit; text-decoration: none; }
+  header h1 { margin: 0; font-size: 1.6rem; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  main { max-width: 860px; margin: 0 auto; padding: 16px 20px 60px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .tool-card {
+    display: block; background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px; text-decoration: none; color: inherit;
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .tool-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 8px 24px rgba(79,70,229,.15); }
+  .tool-card .icon {
+    width: 48px; height: 48px; border-radius: 12px; background: var(--accent-soft);
+    display: grid; place-items: center; font-size: 1.6rem; margin-bottom: 12px;
+  }
+  .tool-card h2 { margin: 0 0 4px; font-size: 1.1rem; }
+  .tool-card p { margin: 0; color: var(--muted); font-size: .92rem; }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .back { display: inline-block; margin-bottom: 14px; color: var(--accent); text-decoration: none; font-weight: 600; }
+  .panel h2 { margin-top: 0; }
+  label { display: block; font-weight: 600; margin: 14px 0 6px; font-size: .92rem; }
+  textarea, input[type=number], input[type=text], select {
+    width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font: inherit;
+  }
+  textarea { min-height: 160px; resize: vertical; }
+  button {
+    background: var(--accent); color: #fff; border: 0; border-radius: 10px;
+    padding: 10px 18px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  button:hover { opacity: .9; }
+  button.secondary { background: var(--accent-soft); color: var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 16px; }
+  .stat { background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; }
+  .stat b { display: block; font-size: 1.5rem; }
+  .stat span { color: var(--muted); font-size: .85rem; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .row > * { flex: 1; min-width: 120px; }
+  .result { font-size: 1.4rem; font-weight: 700; margin-top: 18px; color: var(--accent); word-break: break-all; }
+  .check { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-weight: 400; }
+  .check input { width: auto; }
+  .pw-out { display: flex; gap: 8px; margin-top: 16px; }
+  .pw-out input { font-family: ui-monospace, monospace; font-size: 1.05rem; }
+  .pw-out button { flex: 0 0 auto; }
+  footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 20px; }
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#/"><h1>🧰 My Tools</h1></a>
+  <p>รวมเครื่องมือเล็ก ๆ ที่ใช้ได้ฟรี ไม่ต้องติดตั้ง</p>
+</header>
+
+<main>
+
+  <!-- หน้าแรก -->
+  <section data-view="home">
+    <div class="grid">
+      <a class="tool-card" href="#/word-counter">
+        <div class="icon">📝</div>
+        <h2>นับคำ / ตัวอักษร</h2>
+        <p>นับจำนวนคำ ตัวอักษร และบรรทัดจากข้อความที่พิมพ์</p>
+      </a>
+      <a class="tool-card" href="#/converter">
+        <div class="icon">📐</div>
+        <h2>แปลงหน่วย</h2>
+        <p>แปลงความยาว น้ำหนัก และอุณหภูมิ</p>
+      </a>
+      <a class="tool-card" href="#/password">
+        <div class="icon">🔐</div>
+        <h2>สร้างรหัสผ่าน</h2>
+        <p>สุ่มรหัสผ่านที่ปลอดภัย กำหนดความยาวได้</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- เครื่องมือ 1: นับคำ -->
+  <section data-view="word-counter">
+    <a class="back" href="#/">← กลับหน้าแรก</a>
+    <div class="panel">
+      <h2>📝 นับคำ / ตัวอักษร</h2>
+      <label for="wc-text">พิมพ์หรือวางข้อความ</label>
+      <textarea id="wc-text" placeholder="วางข้อความที่นี่..."></textarea>
+      <div class="stats">
+        <div class="stat"><b id="wc-words">0</b><span>คำ</span></div>
+        <div class="stat"><b id="wc-chars">0</b><span>ตัวอักษร</span></div>
+        <div class="stat"><b id="wc-nospace">0</b><span>ไม่นับช่องว่าง</span></div>
+        <div class="stat"><b id="wc-lines">0</b><span>บรรทัด</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- เครื่องมือ 2: แปลงหน่วย -->
+  <section data-view="converter">
+    <a class="back" href="#/">← กลับหน้าแรก</a>
+    <div class="panel">
+      <h2>📐 แปลงหน่วย</h2>
+      <label for="cv-type">ประเภท</label>
+      <select id="cv-type">
+        <option value="length">ความยาว</option>
+        <option value="weight">น้ำหนัก</option>
+        <option value="temp">อุณหภูมิ</option>
+      </select>
+      <label for="cv-value">ค่าที่ต้องการแปลง</label>
+      <input type="number" id="cv-value" value="1" step="any">
+      <div class="row">
+        <div>
+          <label for="cv-from">จาก</label>
+          <select id="cv-from"></select>
+        </div>
+        <div>
+          <label for="cv-to">เป็น</label>
+          <select id="cv-to"></select>
+        </div>
+      </div>
+      <div class="result" id="cv-result">—</div>
+    </div>
+  </section>
+
+  <!-- เครื่องมือ 3: สร้างรหัสผ่าน -->
+  <section data-view="password">
+    <a class="back" href="#/">← กลับหน้าแรก</a>
+    <div class="panel">
+      <h2>🔐 สร้างรหัสผ่าน</h2>
+      <label for="pw-len">ความยาว: <span id="pw-len-val">16</span> ตัว</label>
+      <input type="range" id="pw-len" min="6" max="64" value="16" style="width:100%">
+      <label class="check"><input type="checkbox" id="pw-lower" checked> ตัวพิมพ์เล็ก (a-z)</label>
+      <label class="check"><input type="checkbox" id="pw-upper" checked> ตัวพิมพ์ใหญ่ (A-Z)</label>
+      <label class="check"><input type="checkbox" id="pw-num" checked> ตัวเลข (0-9)</label>
+      <label class="check"><input type="checkbox" id="pw-sym"> สัญลักษณ์ (!@#$...)</label>
+      <div class="pw-out">
+        <input type="text" id="pw-out" readonly>
+        <button class="secondary" id="pw-copy" type="button">คัดลอก</button>
+        <button id="pw-gen" type="button">สุ่มใหม่</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>สร้างด้วย HTML + JavaScript • โฮสต์บน GitHub Pages</footer>
+
+<script>
+/* ---------- Router (hash-based) ---------- */
+const routes = {
+  "": "home", "/": "home",
+  "/word-counter": "word-counter",
+  "/converter": "converter",
+  "/password": "password"
+};
+function route() {
+  const path = location.hash.replace(/^#/, "");
+  const view = routes[path] || "home";
+  document.querySelectorAll("[data-view]").forEach(el =>
+    el.classList.toggle("active", el.dataset.view === view));
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+route();
+
+/* ---------- Tool 1: Word counter ---------- */
+const wcText = document.getElementById("wc-text");
+function countWords(text) {
+  const t = text.trim();
+  if (!t) return 0;
+  if (typeof Intl !== "undefined" && Intl.Segmenter) {
+    const seg = new Intl.Segmenter("th", { granularity: "word" });
+    let n = 0;
+    for (const s of seg.segment(t)) if (s.isWordLike) n++;
+    return n;
+  }
+  return t.split(/\s+/).length;
+}
+function updateWC() {
+  const v = wcText.value;
+  document.getElementById("wc-words").textContent = countWords(v);
+  document.getElementById("wc-chars").textContent = v.length;
+  document.getElementById("wc-nospace").textContent = v.replace(/\s/g, "").length;
+  document.getElementById("wc-lines").textContent = v ? v.split("\n").length : 0;
+}
+wcText.addEventListener("input", updateWC);
+
+/* ---------- Tool 2: Unit converter ---------- */
+const units = {
+  length: { "เมตร (m)": 1, "กิโลเมตร (km)": 1000, "เซนติเมตร (cm)": 0.01,
+            "มิลลิเมตร (mm)": 0.001, "ไมล์ (mi)": 1609.344, "ฟุต (ft)": 0.3048, "นิ้ว (in)": 0.0254 },
+  weight: { "กิโลกรัม (kg)": 1, "กรัม (g)": 0.001, "ปอนด์ (lb)": 0.45359237,
+            "ออนซ์ (oz)": 0.028349523125, "ตัน (t)": 1000 },
+  temp:   { "เซลเซียส (°C)": "C", "ฟาเรนไฮต์ (°F)": "F", "เคลวิน (K)": "K" }
+};
+const cvType = document.getElementById("cv-type");
+const cvFrom = document.getElementById("cv-from");
+const cvTo = document.getElementById("cv-to");
+const cvValue = document.getElementById("cv-value");
+const cvResult = document.getElementById("cv-result");
+
+function fillUnits() {
+  const names = Object.keys(units[cvType.value]);
+  [cvFrom, cvTo].forEach(sel => {
+    sel.innerHTML = names.map(n => `<option>${n}</option>`).join("");
+  });
+  cvTo.selectedIndex = Math.min(1, names.length - 1);
+  convert();
+}
+function convert() {
+  const type = cvType.value;
+  const v = parseFloat(cvValue.value);
+  if (isNaN(v)) { cvResult.textContent = "—"; return; }
+  const from = units[type][cvFrom.value], to = units[type][cvTo.value];
+  let out;
+  if (type === "temp") {
+    let c = from === "C" ? v : from === "F" ? (v - 32) * 5 / 9 : v - 273.15;
+    out = to === "C" ? c : to === "F" ? c * 9 / 5 + 32 : c + 273.15;
+  } else {
+    out = v * from / to;
+  }
+  cvResult.textContent = `${+out.toPrecision(10)} ${cvTo.value}`;
+}
+cvType.addEventListener("change", fillUnits);
+[cvFrom, cvTo].forEach(el => el.addEventListener("change", convert));
+cvValue.addEventListener("input", convert);
+fillUnits();
+
+/* ---------- Tool 3: Password generator ---------- */
+const sets = {
+  lower: "abcdefghijklmnopqrstuvwxyz",
+  upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  num: "0123456789",
+  sym: "!@#$%^&*()-_=+[]{};:,.?"
+};
+const pwLen = document.getElementById("pw-len");
+const pwOut = document.getElementById("pw-out");
+function randInt(max) {
+  const a = new Uint32Array(1);
+  const limit = Math.floor(0x100000000 / max) * max;
+  do { crypto.getRandomValues(a); } while (a[0] >= limit);
+  return a[0] % max;
+}
+function genPassword() {
+  const active = ["lower", "upper", "num", "sym"].filter(k => document.getElementById("pw-" + k).checked);
+  if (!active.length) { pwOut.value = "เลือกอย่างน้อย 1 ประเภท"; return; }
+  const len = +pwLen.value;
+  const pool = active.map(k => sets[k]).join("");
+  const chars = active.map(k => sets[k][randInt(sets[k].length)]); // ให้มีครบทุกประเภท
+  while (chars.length < len) chars.push(pool[randInt(pool.length)]);
+  for (let i = chars.length - 1; i > 0; i--) {              // shuffle
+    const j = randInt(i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  pwOut.value = chars.slice(0, len).join("");
+}
+pwLen.addEventListener("input", () => {
+  document.getElementById("pw-len-val").textContent = pwLen.value;
+  genPassword();
+});
+["lower", "upper", "num", "sym"].forEach(k =>
+  document.getElementById("pw-" + k).addEventListener("change", genPassword));
+document.getElementById("pw-gen").addEventListener("click", genPassword);
+document.getElementById("pw-copy").addEventListener("click", async (e) => {
+  try {
+    await navigator.clipboard.writeText(pwOut.value);
+    e.target.textContent = "คัดลอกแล้ว ✓";
+    setTimeout(() => (e.target.textContent = "คัดลอก"), 1500);
+  } catch { pwOut.select(); }
+});
+genPassword();
+</script>
+</body>
 </html>
